@@ -4,23 +4,28 @@ package plugins.nchenouard.linearprogrammingfullsimplex;
  * Parameters used for the simplex algorithm
  * 
  * By definition, the optimization problem is of the form:
+ * 
+ * <pre>
  * min_x c'*x or max_x c'*x
- * A*x <= b
- * with x >=0
- * where x, b, c are column vectors and c' is the transpose of c. * stands for the matrix multiplication.
- * Here each constraint A[i]*x can be either "equal" or "lower than or equal" constraints
- * based on the boolean value in the equalityConstraints vector:
+ * A*x &lt;= b
+ * with x &gt;=0
+ * </pre>
+ * 
+ * where x, b, c are column vectors and c' is the transpose of c. * stands for
+ * the matrix multiplication.
+ * <p>
+ * Here each constraint A[i]*x can be either "equal" or "lower than or equal"
+ * constraints based on the boolean value in the equalityConstraints vector:
+ * <p>
  * A[i]*x == b if equalityConstraints[i]
- * A[i]*x <= b if equalityConstraints[i]
+ * <p>
+ * A[i]*x &lt;= b if equalityConstraints[i]
+ * <p>
  * 
  * 
  * Part of the Linear Programming plugin for ICY http://icy.bioimageanalysis.org
  * 
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
- * @version 1.0
- * @date 2014-04-21
- * @license gpl v3.0
- * 
  */
 
 public class CanonicalProgramParameters
@@ -42,10 +47,13 @@ public class CanonicalProgramParameters
 	 * The value for each constraint.
 	 */
 	public double[] b;
+	
 	/**
 	 * Defines the type of constraint
+	 * <p>
 	 * A[i]*x == b if equalityConstraints[i]
-	 * A[i]*x <= b if equalityConstraints[i]
+	 * <p>
+	 * A[i]*x &lt;= b if equalityConstraints[i]
 	 */
 	public boolean[] equalityConstraints;
 }

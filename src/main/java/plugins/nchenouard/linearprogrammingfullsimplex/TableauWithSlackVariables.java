@@ -8,10 +8,6 @@ package plugins.nchenouard.linearprogrammingfullsimplex;
  * Part of the Linear Programming plugin for ICY http://icy.bioimageanalysis.org
  * 
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
- * @version 1.0
- * @date 2014-04-21
- * @license gpl v3.0
- * 
  */
 public class TableauWithSlackVariables {
 	/**
@@ -65,7 +61,7 @@ public class TableauWithSlackVariables {
 	 * 
 	 * @param A table of linear combinations of the variable, each defining a constraint.
 	 */
-	public TableauWithSlackVariables(double[][] A)
+	public TableauWithSlackVariables(final double[][] A)
 	{
 		createVectors(A);
 	}
@@ -75,7 +71,7 @@ public class TableauWithSlackVariables {
 	 * 
 	 * @param parameters parameters defining the linear optimization problem.
 	 */
-	public TableauWithSlackVariables(CanonicalProgramParameters parameters)
+	public TableauWithSlackVariables(final CanonicalProgramParameters parameters)
 	{
 		createVectors(parameters.A); // constraint value column
 		xCol = parameters.b.clone(); // equal to b since we start with unit vectors as initial left vectors
@@ -88,9 +84,9 @@ public class TableauWithSlackVariables {
 	 * 
 	 * @param changeSlack indicate whether the score of each slack variable should be changed
 	 */
-	protected void setUnitScoreToSlackVars(boolean[] changeSlack)
+	protected void setUnitScoreToSlackVars(final boolean[] changeSlack)
 	{
-		double[] scoreValues = new double[numCol];
+		final double[] scoreValues = new double[numCol];
 		// recompute scoreValues based on c
 		int k = 0;
 		for (int i = 0; i < originalColOrder.length; i++)
@@ -134,9 +130,9 @@ public class TableauWithSlackVariables {
 	 * Create column and basis vectors based on the constraint matrix
 	 * @param A Constraint matrix. Each element A[i] defines a linear combination of the variable corresponding to a constraint.
 	 * */
-	protected void createVectors(double[][] A)
+	protected void createVectors(final double[][] A)
 	{
-		int numConstraints = A.length;
+		final int numConstraints = A.length;
 		numVariables = A[0].length;
 		numCol = numConstraints + numVariables;
 		numRows = numConstraints;
@@ -173,7 +169,7 @@ public class TableauWithSlackVariables {
 		System.out.println("Column vectors");
 		for (int i = 0; i < columnVectors.length; i++)
 		{
-			double[] vector = columnVectors[i];
+			final double[] vector = columnVectors[i];
 			System.out.print("a"+i+" = [");
 			for (int j = 0; j < vector.length; j++)
 				System.out.print(vector[j]+", ");
@@ -182,7 +178,7 @@ public class TableauWithSlackVariables {
 		System.out.println("Basis vectors");
 		for (int i = 0; i < leftVectorsIdx.length; i++)
 		{
-			double[] vector = columnVectors[leftVectorsIdx[i]];
+			final double[] vector = columnVectors[leftVectorsIdx[i]];
 			System.out.print("v"+i+" = [");
 			for (int j = 0; j < vector.length; j++)
 				System.out.print(vector[j]+", ");
@@ -216,16 +212,16 @@ public class TableauWithSlackVariables {
 	 * @param colIdx index of the pivoting column in the tableau
 	 * @param rowIdx index of the pivoting row in the tableau
 	*/
-	public void pivot(int colIdx, int rowIdx)
+	public void pivot(final int colIdx, final int rowIdx)
 	{
 		leftVectorsIdx[rowIdx] = colIdx;
 
-		double pivotVal = tableau[rowIdx][colIdx];
-		double[] pivotRow = tableau[rowIdx];
-		double[] pivotCol = new double[numRows];
+		final double pivotVal = tableau[rowIdx][colIdx];
+		final double[] pivotRow = tableau[rowIdx];
+		final double[] pivotCol = new double[numRows];
 		for (int i = 0; i < numRows; i++)
 			pivotCol[i] = tableau[i][colIdx];
-		double scorePivot = scoreRow[colIdx];
+		final double scorePivot = scoreRow[colIdx];
 
 		// update the score row
 		for (int j = 0; j < colIdx; j++)
@@ -271,10 +267,10 @@ public class TableauWithSlackVariables {
 	 * */
 	public double[] getSolution()
 	{
-		double[] solution = new double[numVariables];
+		final double[] solution = new double[numVariables];
 		for (int i = 0; i < leftVectorsIdx.length; i++)
 		{
-			int originalIdx = originalColOrder[leftVectorsIdx[i]];
+			final int originalIdx = originalColOrder[leftVectorsIdx[i]];
 			if (originalIdx >= 0)
 				solution[originalIdx] = xCol[i];
 
@@ -284,9 +280,9 @@ public class TableauWithSlackVariables {
 	/**
 	 * Modify scores in the tableau according to a set of scores for the constraints
 	 * */
-	public void modifyScores(double[] c)
+	public void modifyScores(final double[] c)
 	{
-		double[] scoreValues = new double[numCol];
+		final double[] scoreValues = new double[numCol];
 		for (int i = 0; i < numCol; i++)
 		{
 			if (originalColOrder[i] >= 0)
@@ -322,9 +318,9 @@ public class TableauWithSlackVariables {
 	 * Modify scores in the tableau according to a set of scores for the constraints
 	 * Same as modifyScoresBis. Just a backup function. Still working on it.
 	 * */
-	public void modifyScoresBis(double[] c)
+	public void modifyScoresBis(final double[] c)
 	{
-		double[] scoreValues = new double[numCol];
+		final double[] scoreValues = new double[numCol];
 		for (int i = 0; i < numCol; i++)
 		{
 			if (originalColOrder[i] >= 0)

@@ -10,26 +10,27 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * Linear program for the Simplex algorithm. Inheriting classes should implement the pivoting rule.
+ * Linear program for the Simplex algorithm. Inheriting classes should implement
+ * the pivoting rule.
  * 
- * By definition, the optimization problem is of the form:
- * min_x c'*x or max_x c'*x
- * A*x <= b
- * with x >=0
- * where x, b, c are column vectors and c' is the transpose of c. * stands for the matrix multiplication.
- * Here each constraint A[i]*x can be either "equal" or "lower than or equal" constraints
- * based on the boolean value in the equalityConstraints vector:
+ * By definition, the optimization problem is of the form: min_x c'*x or max_x
+ * c'*x A*x &lt;= b with x &gt;=0 where x, b, c are column vectors and c' is the
+ * transpose of c.
+ * 
+ * * stands for the matrix multiplication.
+ * 
+ * Here each constraint <code>A[i]*x</code> can be either "equal" or "lower than
+ * or equal" constraints based on the boolean value in the equality constraints
+ * vector:
+ * <p>
  * A[i]*x == b if equalityConstraints[i]
- * A[i]*x <= b if equalityConstraints[i]
- * 
+ * <p>
+ * A[i]*x &lt;= b if equalityConstraints[i]
+ * <p>
  * 
  * Part of the Linear Programming plugin for ICY http://icy.bioimageanalysis.org
  * 
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
- * @version 1.0
- * @date 2014-04-21
- * @license gpl v3.0
- * 
  */
 
 public abstract class CanonicalSimplexProgram
@@ -65,13 +66,20 @@ public abstract class CanonicalSimplexProgram
 
 	/**
 	 * Constructor specifying parameters of the linear programming problem.
-	 * @param A constraint matrix
-	 * @param b constraint values
-	 * @param c linear objective function weights
-	 * @param maximization maximization problem if true, minimization else.
-	 * @param equality indicates whether each constraint is an equality. Else it is <=.
-	 * */
-	public CanonicalSimplexProgram(double[][] A, double[] b, double[] c, boolean maximization, boolean[] equality)
+	 * 
+	 * @param A
+	 *            constraint matrix
+	 * @param b
+	 *            constraint values
+	 * @param c
+	 *            linear objective function weights
+	 * @param maximization
+	 *            maximization problem if true, minimization else.
+	 * @param equality
+	 *            indicates whether each constraint is an equality. Else it is
+	 *            &lt;=.
+	 */
+	public CanonicalSimplexProgram(final double[][] A, final double[] b, final double[] c, final boolean maximization, final boolean[] equality)
 	{
 		this.parameters = new CanonicalProgramParameters();
 		this.parameters.A = A;
@@ -86,7 +94,7 @@ public abstract class CanonicalSimplexProgram
 	 * Constructor specifying parameters of the linear programming problem.
 	 * @param p Parameters of the linear programming problem.
 	*/
-	public CanonicalSimplexProgram(CanonicalProgramParameters p)
+	public CanonicalSimplexProgram(final CanonicalProgramParameters p)
 	{
 		this.parameters = p;
 		this.numVariables = p.c.length;
@@ -99,13 +107,13 @@ public abstract class CanonicalSimplexProgram
 	 * */
 	public boolean solvePrimalSimplex()
 	{
-		double[][] A = parameters.A;
-		double[] b = parameters.b;
-		boolean[] eq = parameters.equalityConstraints;
-		double[] c = parameters.c;
+		final double[][] A = parameters.A;
+		final double[] b = parameters.b;
+		final boolean[] eq = parameters.equalityConstraints;
+		final double[] c = parameters.c;
 
 		boolean onlyInequality = true;
-		for (boolean e:eq)
+		for (final boolean e:eq)
 		{
 			if (e)
 			{
@@ -133,10 +141,10 @@ public abstract class CanonicalSimplexProgram
 			if(hasNegativeRHS)
 			{
 				// add slack variables and multiply by -1 when corresponding to a negative right-hand-side
-				double[][] A2 = new double[numConstraints][numConstraints + numVariables];
-				double[] c2 = new double[numConstraints + numVariables];
+				final double[][] A2 = new double[numConstraints][numConstraints + numVariables];
+				final double[] c2 = new double[numConstraints + numVariables];
 				System.arraycopy(c, 0, c2, 0, numVariables); // no cost for slack variables
-				boolean[] equality = new boolean[numConstraints];
+				final boolean[] equality = new boolean[numConstraints];
 				for (int i = 0; i < numConstraints; i++)
 				{
 					equality[i] = true;
@@ -159,7 +167,7 @@ public abstract class CanonicalSimplexProgram
 				// we have now a problem with only equality constraints and non-negative right-hand-side
 				if(solveWithEqualities(false))
 				{
-					double[] tmpSolution = this.solution;
+					final double[] tmpSolution = this.solution;
 					this.solution = new double[numVariables];
 					System.arraycopy(tmpSolution, 0, solution, 0, numVariables);
 				}
@@ -175,9 +183,9 @@ public abstract class CanonicalSimplexProgram
 			{	
 				// we need to solve first a problem to find the initial tableau
 				// we will add slack variables and minimize the cost of the sum of the slack variables for the equality constraints
-				boolean maximization = false;
-				boolean[] eq2 = new boolean[numConstraints];
-				boolean[] isNegativeConstraint = new boolean[numConstraints];
+				final boolean maximization = false;
+				final boolean[] eq2 = new boolean[numConstraints];
+				final boolean[] isNegativeConstraint = new boolean[numConstraints];
 				for (int i = 0; i < numConstraints; i++)
 				{
 					if (b[i] < 0)
@@ -188,7 +196,7 @@ public abstract class CanonicalSimplexProgram
 							A[i][j] = -A[i][j];
 					}
 				}
-				CanonicalSimplexProgram modifiedProgram = createNewProgram(A, b, c, maximization, eq2);
+				final CanonicalSimplexProgram modifiedProgram = createNewProgram(A, b, c, maximization, eq2);
 				if (modifiedProgram.solvePhaseICanonicalSimplex())
 				{
 					modifiedProgram.tableau0.setUnitScoreToSlackVars(eq2);
@@ -221,7 +229,7 @@ public abstract class CanonicalSimplexProgram
 	 * Solve a problem that contains only inequality constraints
 	 * @return true if optimization succeeded, false otherwise.
 	 * */
-	private boolean solveWithInequalities(boolean compareWithLPSolve)
+	private boolean solveWithInequalities(final boolean compareWithLPSolve)
 	{
 		// Canonical form: initial tableau is built by introducing unit vectors
 		solvePhaseICanonicalSimplex();
@@ -238,7 +246,7 @@ public abstract class CanonicalSimplexProgram
 	 * Solve a problem that contains some equality constraints
 	 * @return true if optimization succeeded, false otherwise.
 	 * */
-	private boolean solveWithEqualities(boolean compareWithLPSolve)
+	private boolean solveWithEqualities(final boolean compareWithLPSolve)
 	{
 		tableau0 = new TableauMinSlackObjective(this);
 		if (verbose)
@@ -261,7 +269,7 @@ public abstract class CanonicalSimplexProgram
 //				}
 //			}
 //		}		
-		boolean success = solvePhaseIICanonicalSimplex(tableau0, false); // minimization of the init tableau
+		final boolean success = solvePhaseIICanonicalSimplex(tableau0, false); // minimization of the init tableau
 		//		{
 		//			double c[] = new double[tableau0.numCol];
 		//			for (int i = 0; i < numConstraints; i ++)
@@ -315,7 +323,7 @@ public abstract class CanonicalSimplexProgram
 	 * Solve the phase II of the Simplex algorithm for canonical problem: no equality constraints nor negative constraints
 	 * @return true if optimization succeeded, false otherwise.
 	 * */
-	public boolean solvePhaseIICanonicalSimplex(TableauWithSlackVariables tableau, boolean max)
+	public boolean solvePhaseIICanonicalSimplex(final TableauWithSlackVariables tableau, final boolean max)
 	{
 		if (tableau == null)
 			return false;
@@ -327,7 +335,7 @@ public abstract class CanonicalSimplexProgram
 		while(feasible && !reachedOptimum)
 		{
 			// start optimization
-			int colIdx = getPivotColumn(tableau, max);
+			final int colIdx = getPivotColumn(tableau, max);
 			if (colIdx < 0)// optimal solution achieved
 			{
 				reachedOptimum = true;
@@ -335,7 +343,7 @@ public abstract class CanonicalSimplexProgram
 			}
 			else
 			{
-				int rowIdx = getRowidx(tableau, colIdx);
+				final int rowIdx = getRowidx(tableau, colIdx);
 				if (rowIdx < 0) // not feasible
 				{
 					feasible = false;
@@ -374,12 +382,19 @@ public abstract class CanonicalSimplexProgram
 
 	/**
 	 * Duplicate the program
-	 * @param A constraint matrix
-	 * @param b constraint values
-	 * @param c linear objective function weights
-	 * @param maximization maximization problem if true, minimization else.
-	 * @param equality indicates whether each constraint is an equality. Else it is <=.
-	 * */
+	 * 
+	 * @param A
+	 *            constraint matrix
+	 * @param b
+	 *            constraint values
+	 * @param c
+	 *            linear objective function weights
+	 * @param maximization
+	 *            maximization problem if true, minimization else.
+	 * @param equality
+	 *            indicates whether each constraint is an equality. Else it is
+	 *            &lt;=.
+	 */
 	protected abstract CanonicalSimplexProgram createNewProgram(double[][] A, double[] b, double[] c, boolean maximization, boolean[] equality);
 
 	/**
@@ -403,8 +418,8 @@ public abstract class CanonicalSimplexProgram
 	 * */
 	public void checkSolution()
 	{
-		double[][] A0 = parameters.A;
-		double[] b0 = parameters.b;
+		final double[][] A0 = parameters.A;
+		final double[] b0 = parameters.b;
 		if (solution != null)
 		{
 			for (int i = 0; i < numConstraints; i++)
@@ -465,7 +480,7 @@ public abstract class CanonicalSimplexProgram
 	/**
 	 * Set the parameters of the linear programming problem
 	 * */
-	public void setParameters(CanonicalProgramParameters parameters) {
+	public void setParameters(final CanonicalProgramParameters parameters) {
 		this.parameters = parameters;
 	}
 
@@ -545,7 +560,7 @@ public abstract class CanonicalSimplexProgram
 	 * */
 	public static String getHelp()
 	{
-		String helpString = "Run the solver for example problems or for a user-defined system\n" 
+		final String helpString = "Run the solver for example problems or for a user-defined system\n" 
 				+ "Empty arguments to use the default example.\n"
 				+ "Enter an integer from 0 to 3 for different example scenarios.\n"
 				+ "Enter -1 for a user-defined scenario through text files.\n "
@@ -591,7 +606,7 @@ public abstract class CanonicalSimplexProgram
 	 * For the equality file '0' stands for 'false' and '1' for true.
 	 * 
 	 * */
-	public static void main(String [] args)
+	public static void main(final String [] args)
 	{
 		int scenario = 0;
 		if (args.length > 0)
@@ -606,7 +621,7 @@ public abstract class CanonicalSimplexProgram
 				try {
 					scenario = Integer.parseInt(args[0]);
 				}
-				catch (NumberFormatException e)
+				catch (final NumberFormatException e)
 				{
 					System.out.println("Invalid input argument");
 					System.out.println("Use input option -help to display the manual of the software");
@@ -754,14 +769,14 @@ public abstract class CanonicalSimplexProgram
 				equality = new boolean[tab.length-1];
 				for (int i = 0; i < tab.length-1; i++)
 				{
-					double d = Double.parseDouble(tab[i]);
+					final double d = Double.parseDouble(tab[i]);
 					equality[i] = d > 0;
 				}
 				reader.close();
 				fis.close();
 
-				int numRow = b.length;
-				int numCol = c.length;
+				final int numRow = b.length;
+				final int numCol = c.length;
 
 				file = new File(fileA);
 				fis = new FileInputStream(file);
@@ -781,10 +796,10 @@ public abstract class CanonicalSimplexProgram
 				}
 				reader.close();
 				fis.close();
-			} catch (FileNotFoundException e) {
+			} catch (final FileNotFoundException e) {
 				e.printStackTrace();
 				return;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 				return;
 			}
@@ -856,14 +871,14 @@ public abstract class CanonicalSimplexProgram
 			System.out.println("Use input option -help to display the manual of the software");
 			return;
 		}
-		CanonicalSimplexProgram program = new SimplexLEXICO(A, b, c, maximization, equality);
+		final CanonicalSimplexProgram program = new SimplexLEXICO(A, b, c, maximization, equality);
 		if (verbose)
 		{
 			program.displayProblem();
 		}
 		if(program.solvePrimalSimplex())
 		{
-			double[] solution = program.solution;
+			final double[] solution = program.solution;
 			if (verbose)
 			{
 				System.out.print("Computed solution = [");
@@ -897,7 +912,7 @@ public abstract class CanonicalSimplexProgram
 					out.write("\nscore\n");
 					out.write(Double.toString(program.tableau0.scoreValue));
 					out.close();					
-				} catch (IOException e) {
+				} catch (final IOException e) {
 					e.printStackTrace();
 					return;
 				}
@@ -911,7 +926,7 @@ public abstract class CanonicalSimplexProgram
 		}
 	}
 	
-	public static void runExampleScenario(int scenario)
+	public static void runExampleScenario(final int scenario)
 	{
 		if (scenario < 0 || scenario > 3)
 		{
@@ -924,7 +939,7 @@ public abstract class CanonicalSimplexProgram
 		double[] c = null;
 		boolean[] equality = null;
 		double[][] A = null;
-		boolean verbose = true;
+		final boolean verbose = true;
 		switch (scenario) {
 		case 0:
 		{
@@ -987,7 +1002,7 @@ public abstract class CanonicalSimplexProgram
 			break;
 		}
 		}
-		CanonicalSimplexProgram program = new SimplexLEXICO(A, b, c, maximization, equality);
+		final CanonicalSimplexProgram program = new SimplexLEXICO(A, b, c, maximization, equality);
 		if (verbose)
 		{
 			System.out.println();
@@ -995,7 +1010,7 @@ public abstract class CanonicalSimplexProgram
 		}
 		if(program.solvePrimalSimplex())
 		{
-			double[] solution = program.solution;
+			final double[] solution = program.solution;
 			if (verbose)
 			{
 				System.out.println();
