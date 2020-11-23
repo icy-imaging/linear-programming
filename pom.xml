@@ -10,7 +10,7 @@
         <version>1.0.4</version>
     </parent>
 
-    <artifactId>icy-linear-programming</artifactId>
+    <artifactId>linear-programming</artifactId>
     <version>1.0.2</version>
 
     <packaging>jar</packaging>
