@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.bioimageanalysis.icy</groupId>
         <artifactId>parent-pom-plugin</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.3</version>
     </parent>
 
     <artifactId>linear-programming</artifactId>
@@ -31,5 +31,4 @@
             <url>https://icy-nexus.pasteur.fr/repository/Icy/</url>
         </repository>
     </repositories>
-
 </project>
