@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -45,7 +45,6 @@ package plugins.nchenouard.linearprogrammingfullsimplex;
  *
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
  */
-
 public class CanonicalProgramParameters {
     /**
      * The objective function coefficient: c'*x or sum_i c[i]*x[i] for the variable x.

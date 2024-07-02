@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -17,6 +17,9 @@
  */
 
 package plugins.nchenouard.linearprogrammingfullsimplex;
+
+import org.bioimageanalysis.icy.system.logging.IcyLogger;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Tableau used for Gauss-Jordan elimination.
@@ -88,7 +91,7 @@ public class TableauWithSlackVariables {
      *
      * @param parameters parameters defining the linear optimization problem.
      */
-    public TableauWithSlackVariables(final CanonicalProgramParameters parameters) {
+    public TableauWithSlackVariables(final @NotNull CanonicalProgramParameters parameters) {
         createVectors(parameters.A); // constraint value column
         xCol = parameters.b.clone(); // equal to b since we start with unit vectors as initial left vectors
         // build the score row
@@ -141,7 +144,7 @@ public class TableauWithSlackVariables {
      *
      * @param A Constraint matrix. Each element A[i] defines a linear combination of the variable corresponding to a constraint.
      */
-    protected void createVectors(final double[][] A) {
+    protected void createVectors(final double @NotNull [] @NotNull [] A) {
         final int numConstraints = A.length;
         numVariables = A[0].length;
         numCol = numConstraints + numVariables;
@@ -174,42 +177,39 @@ public class TableauWithSlackVariables {
      * Print the tableau
      */
     public void printTableau() {
-        System.out.println("Column vectors");
+        IcyLogger.trace(this.getClass(), "Column vectors");
         for (int i = 0; i < columnVectors.length; i++) {
             final double[] vector = columnVectors[i];
-            System.out.print("a" + i + " = [");
+            IcyLogger.trace(this.getClass(), "a" + i + " = [");
             for (final double v : vector)
-                System.out.print(v + ", ");
-            System.out.println("]'");
+                IcyLogger.trace(this.getClass(), v + ", ");
+            IcyLogger.trace(this.getClass(), "]'");
         }
-        System.out.println("Basis vectors");
+        IcyLogger.trace(this.getClass(), "Basis vectors");
         for (int i = 0; i < leftVectorsIdx.length; i++) {
             final double[] vector = columnVectors[leftVectorsIdx[i]];
-            System.out.print("v" + i + " = [");
+            IcyLogger.trace(this.getClass(), "v" + i + " = [");
             for (final double v : vector)
-                System.out.print(v + ", ");
-            System.out.println("]'");
+                IcyLogger.trace(this.getClass(), v + ", ");
+            IcyLogger.trace(this.getClass(), "]'");
         }
-        System.out.println("Tableau");
+        IcyLogger.trace(this.getClass(), "Tableau");
         for (final double[] doubles : tableau) {
             for (final double aDouble : doubles)
-                System.out.print(aDouble + " ");
-            System.out.println();
+                IcyLogger.trace(this.getClass(), aDouble + " ");
         }
 
-        System.out.println();
-        System.out.print("x = [");
+        IcyLogger.trace(this.getClass(), "x = [");
         for (final double v : xCol)
-            System.out.print(v + ", ");
-        System.out.println("]'");
+            IcyLogger.trace(this.getClass(), v + ", ");
+        IcyLogger.trace(this.getClass(), "]'");
 
-        System.out.println();
-        System.out.print("score row = [");
+        IcyLogger.trace(this.getClass(), "score row = [");
         for (final double v : scoreRow)
-            System.out.print(v + ", ");
-        System.out.println("]'");
+            IcyLogger.trace(this.getClass(), v + ", ");
+        IcyLogger.trace(this.getClass(), "]'");
 
-        System.out.println("Score = " + scoreValue);
+        IcyLogger.trace(this.getClass(), "Score = " + scoreValue);
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,12 +18,14 @@
 
 package plugins.nchenouard.linearprogrammingfullsimplex;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 
 /**
  * Implements the lexicographic rule for pivoting for the Simplex algorithm.
  * <p>
- * Part of the Linear Programming plugin for ICY http://icy.bioimageanalysis.org
+ * Part of the Linear Programming plugin for ICY <a href="https://icy.bioimageanalysis.org">https://icy.bioimageanalysis.org</a>
  *
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
  */
@@ -100,7 +102,7 @@ public class SimplexLEXICO extends CanonicalSimplexProgram {
      * @return the row index in the tableau
      */
     @Override
-    protected int getRowidx(final TableauWithSlackVariables tableau, final int colIdx) {
+    protected int getRowidx(final @NotNull TableauWithSlackVariables tableau, final int colIdx) {
         int rowIdx = -1;
         int numBasicRow = 0;
         final ArrayList<Integer> basicCols = new ArrayList<>();

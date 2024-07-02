@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,7 +18,9 @@
 
 package plugins.nchenouard.linearprogrammingfullsimplex;
 
-import icy.system.IcyExceptionHandler;
+import org.bioimageanalysis.icy.system.logging.IcyLogger;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 
@@ -45,7 +47,6 @@ import java.io.*;
  *
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
  */
-
 public abstract class CanonicalSimplexProgram {
     /**
      * Parameters defining the linear programming problem
@@ -86,7 +87,7 @@ public abstract class CanonicalSimplexProgram {
      * @param equality     indicates whether each constraint is an equality. Else it is
      *                     &lt;=.
      */
-    public CanonicalSimplexProgram(final double[][] A, final double[] b, final double[] c, final boolean maximization, final boolean[] equality) {
+    public CanonicalSimplexProgram(final double[][] A, final double @NotNull [] b, final double @NotNull [] c, final boolean maximization, final boolean[] equality) {
         this.parameters = new CanonicalProgramParameters();
         this.parameters.A = A;
         this.parameters.b = b;
@@ -102,7 +103,8 @@ public abstract class CanonicalSimplexProgram {
      *
      * @param p Parameters of the linear programming problem.
      */
-    public CanonicalSimplexProgram(final CanonicalProgramParameters p) {
+    @Contract(pure = true)
+    public CanonicalSimplexProgram(final @NotNull CanonicalProgramParameters p) {
         this.parameters = p;
         this.numVariables = p.c.length;
         this.numConstraints = p.b.length;
@@ -224,7 +226,7 @@ public abstract class CanonicalSimplexProgram {
         // Canonical form: initial tableau is built by introducing unit vectors
         solvePhaseICanonicalSimplex();
         if (verbose) {
-            System.out.println("Tableau after phase 1 :");
+            IcyLogger.trace(this.getClass(), "Tableau after phase 1: ");
             tableau0.printTableau();
         }
         // Phase II: optimisation by Gauss-Jordan replacement of non-basic columns
@@ -269,7 +271,7 @@ public abstract class CanonicalSimplexProgram {
         if (!success)
             return false;
         if (verbose) {
-            System.out.println("Phase 1 ");
+            IcyLogger.trace(this.getClass(), "Phase 1 ");
             tableau0.printTableau();
         }
         if (Math.abs(tableau0.scoreValue) < tol) // optimal score should be 0
@@ -337,22 +339,22 @@ public abstract class CanonicalSimplexProgram {
                 }
                 else {
                     if (verbose)
-                        System.out.println("replacement: row = " + rowIdx + ", column  = " + colIdx);
+                        IcyLogger.trace(this.getClass(), "replacement: row = " + rowIdx + ", column  = " + colIdx);
                     tableau.pivot(colIdx, rowIdx);
                 }
             }
             if (verbose) {
-                System.out.println("Tableau at iteration:");
+                IcyLogger.trace(this.getClass(), "Tableau at iteration: ");
                 tableau.printTableau();
             }
         }
         if (verbose) {
-            System.out.println("Final tableau:");
+            IcyLogger.trace(this.getClass(), "Final tableau: ");
             tableau.printTableau();
         }
         if (!feasible) {
             if (verbose)
-                System.out.println("UNFEASIBLE problem");
+                IcyLogger.trace(this.getClass(), "UNFEASIBLE problem");
             return false;
         }
         else {
@@ -404,7 +406,7 @@ public abstract class CanonicalSimplexProgram {
                 for (int j = 0; j < solution.length; j++) {
                     v += A0[i][j] * solution[j];
                 }
-                System.out.println(v + "<?>" + b0[i]);
+                IcyLogger.info(this.getClass(), v + "<?>" + b0[i]);
             }
         }
     }
@@ -465,36 +467,35 @@ public abstract class CanonicalSimplexProgram {
 
 
     public void displayProblem() {
-        System.out.println("Linear Programming problem max c'x st. Ax <= b, x >= 0 and some equality contraints defined by eq");
+        IcyLogger.info(this.getClass(), "Linear Programming problem max c'x st. Ax <= b, x >= 0 and some equality contraints defined by eq");
         if (parameters.maximization)
-            System.out.println("Maximization problem");
+            IcyLogger.info(this.getClass(), "Maximization problem");
         else
-            System.out.println("Minimization problem");
-        System.out.print("c = [");
+            IcyLogger.info(this.getClass(), "Minimization problem");
+        IcyLogger.info(this.getClass(), "c = [");
         for (int i = 0; i < parameters.c.length; i++)
-            System.out.print(parameters.c[i] + ", ");
-        System.out.println("]");
-        System.out.print("b = [");
+            IcyLogger.info(this.getClass(), parameters.c[i] + ", ");
+        IcyLogger.info(this.getClass(), "]");
+        IcyLogger.info(this.getClass(), "b = [");
         for (int i = 0; i < parameters.b.length; i++)
-            System.out.print(parameters.b[i] + ", ");
-        System.out.println("]");
-        System.out.print("eq = [");
+            IcyLogger.info(this.getClass(), parameters.b[i] + ", ");
+        IcyLogger.info(this.getClass(), "]");
+        IcyLogger.info(this.getClass(), "eq = [");
         for (int i = 0; i < parameters.equalityConstraints.length; i++)
-            System.out.print(parameters.equalityConstraints[i] + ", ");
-        System.out.println("]");
-        System.out.print("A = [");
+            IcyLogger.info(this.getClass(), parameters.equalityConstraints[i] + ", ");
+        IcyLogger.info(this.getClass(), "]");
+        IcyLogger.info(this.getClass(), "A = [");
         for (int i = 0; i < parameters.A.length; i++) {
-            System.out.print("[");
+            IcyLogger.info(this.getClass(), "[");
             for (int j = 0; j < parameters.A[i].length; j++)
-                System.out.print(parameters.A[i][j] + ", ");
-            System.out.println("],");
+                IcyLogger.info(this.getClass(), parameters.A[i][j] + ", ");
+            IcyLogger.info(this.getClass(), "],");
         }
-        System.out.println("]");
+        IcyLogger.info(this.getClass(), "]");
     }
 
     public void displayProblemTutorial() {
-        System.out.println("Linear Programming problem:");
-        System.out.println();
+        IcyLogger.info(this.getClass(), "Linear Programming problem:");
         StringBuilder line = new StringBuilder();
         if (parameters.maximization)
             line.append("max_x");
@@ -507,10 +508,8 @@ public abstract class CanonicalSimplexProgram {
             else
                 line.append(" - ").append(Math.abs(parameters.c[i])).append("*x[").append(i).append("]");
         }
-        System.out.println(line);
-        System.out.println();
-        System.out.println("Such that x >= 0 and:");
-        System.out.println();
+        IcyLogger.info(this.getClass(), line.toString());
+        IcyLogger.info(this.getClass(), "Such that x >= 0 and:");
         for (int i = 0; i < parameters.b.length; i++) {
             line = new StringBuilder();
             for (int j = 0; j < parameters.A[i].length; j++) {
@@ -524,7 +523,7 @@ public abstract class CanonicalSimplexProgram {
             else
                 line.append(" <= ");
             line.append(parameters.b[i]);
-            System.out.println(line);
+            IcyLogger.info(this.getClass(), line.toString());
         }
     }
 
@@ -532,29 +531,30 @@ public abstract class CanonicalSimplexProgram {
      * @return Manual of the library for stand-alone use through command line
      */
     public static String getHelp() {
-        return "Run the solver for example problems or for a user-defined system\n"
-                + "Empty arguments to use the default example.\n"
-                + "Enter an integer from 0 to 3 for different example scenarios.\n"
-                + "Enter -1 for a user-defined scenario through text files.\n "
-                + "For custom scenarios, enter filenames (text files) for different parameters of the problem preceded by the appropriate prefix:\n"
-                + "-c for the objective function file.\n"
-                + "-A for constraint matrix file.\n"
-                + "-b for the constraint value file.\n"
-                + "-e for the equality constraint file.\n"
-                + "-max or -min to indicate a maximization or minimization problem, respectively. Default in minimization.\n"
-                + "Example arguments: java -jar linearProgrammingICY.jar -c c.txt -A A.txt -b b.txt -e eq.txt -max -o solution.txt"
-                + "Each text file must contain a series of double values separated by ',' in a single line, except for the constraint file which contains one line per constraint.\n"
-                + "For the equality file '0' stands for 'false' and '1' for true.\n\n"
-                + "Version 1.0. April 2014. Author: Nicolas Chenouard. nicolas.chenouard.dev@gmail.com. Licence GPL V3.0";
+        return """
+                Run the solver for example problems or for a user-defined system
+                Empty arguments to use the default example.
+                Enter an integer from 0 to 3 for different example scenarios.
+                Enter -1 for a user-defined scenario through text files.
+                For custom scenarios, enter filenames (text files) for different parameters of the problem preceded by the appropriate prefix:
+                -c for the objective function file.
+                -A for constraint matrix file.
+                -b for the constraint value file.
+                -e for the equality constraint file.
+                -max or -min to indicate a maximization or minimization problem, respectively. Default in minimization.
+                Example arguments: java -jar linearProgrammingICY.jar -c c.txt -A A.txt -b b.txt -e eq.txt -max -o solution.txt\
+                Each text file must contain a series of double values separated by ',' in a single line, except for the constraint file which contains one line per constraint.
+                For the equality file '0' stands for 'false' and '1' for true.
+
+                Version 1.0. April 2014. Author: Nicolas Chenouard. nicolas.chenouard.dev@gmail.com. Licence GPL V3.0""";
     }
 
     /**
      * Display the manual of the library for stand-alone use through command line
      */
     public static void displayHelp() {
-        System.out.println(getHelp());
+        IcyLogger.info(CanonicalSimplexProgram.class, getHelp());
     }
-
 
     /**
      * Run the solver for example problems or for a user-defined system
@@ -575,7 +575,7 @@ public abstract class CanonicalSimplexProgram {
      *             Each text file must contain a series of double values separated by ',' in a single line, except for the constraint file which contains one line per constraint.
      *             For the equality file '0' stands for 'false' and '1' for true.
      */
-    public static void main(final String[] args) {
+    public static void main(final String @NotNull [] args) {
         int scenario = 0;
         if (args.length > 0) {
             if (args[0].compareTo("-h") == 0 || args[0].compareTo("-help") == 0 || args[0].compareTo("--h") == 0 || args[0].compareTo("--help") == 0) {
@@ -587,20 +587,28 @@ public abstract class CanonicalSimplexProgram {
                     scenario = Integer.parseInt(args[0]);
                 }
                 catch (final NumberFormatException e) {
-                    System.out.println("Invalid input argument");
-                    System.out.println("Use input option -help to display the manual of the software");
-                    IcyExceptionHandler.showErrorMessage(e, true);
+                    IcyLogger.error(
+                            CanonicalSimplexProgram.class,
+                            "Invalid input argument",
+                            "Use input option -help to display the manual of the software"
+                    );
                     return;
                 }
             }
         }
         else {
-            System.out.println("Solving a default simple linear problem with the Simplex algorithm.");
-            System.out.println("Enter -help for the manual explicating the customization options.");
+            IcyLogger.info(
+                    CanonicalSimplexProgram.class,
+                    "Solving a default simple linear problem with the Simplex algorithm.",
+                    "Enter -help for the manual explicating the customization options."
+            );
         }
         if (scenario < -1 || scenario > 3) {
-            System.out.println("Invalid input argument");
-            System.out.println("Use input option -help to display the manual of the software");
+            IcyLogger.error(
+                    CanonicalSimplexProgram.class,
+                    "Invalid input argument",
+                    "Use input option -help to display the manual of the software"
+            );
             return;
         }
         boolean maximization = false;
@@ -633,8 +641,11 @@ public abstract class CanonicalSimplexProgram {
                     }
                 }
                 if (fileA == null) {
-                    System.out.println("Missing -A input argument");
-                    System.out.println("Use input option -help to display the manual of the software");
+                    IcyLogger.error(
+                            CanonicalSimplexProgram.class,
+                            "Missing -A input argument",
+                            "Use input option -help to display the manual of the software"
+                    );
                     return;
                 }
                 String fileB = null;
@@ -645,8 +656,11 @@ public abstract class CanonicalSimplexProgram {
                     }
                 }
                 if (fileB == null) {
-                    System.out.println("Missing -b input argument");
-                    System.out.println("Use input option -help to display the manual of the software");
+                    IcyLogger.error(
+                            CanonicalSimplexProgram.class,
+                            "Missing -b input argument",
+                            "Use input option -help to display the manual of the software"
+                    );
                     return;
                 }
 
@@ -658,8 +672,11 @@ public abstract class CanonicalSimplexProgram {
                     }
                 }
                 if (fileC == null) {
-                    System.out.println("Missing -c input argument");
-                    System.out.println("Use input option -help to display the manual of the software");
+                    IcyLogger.error(
+                            CanonicalSimplexProgram.class,
+                            "Missing -c input argument",
+                            "Use input option -help to display the manual of the software"
+                    );
                     return;
                 }
                 for (int i = 0; i < args.length - 1; i++) {
@@ -676,8 +693,11 @@ public abstract class CanonicalSimplexProgram {
                     }
                 }
                 if (fileE == null) {
-                    System.out.println("Missing -e input argument");
-                    System.out.println("Use input option -help to display the manual of the software");
+                    IcyLogger.error(
+                            CanonicalSimplexProgram.class,
+                            "Missing -e input argument",
+                            "Use input option -help to display the manual of the software"
+                    );
                     return;
                 }
                 try {
@@ -738,15 +758,18 @@ public abstract class CanonicalSimplexProgram {
                     fis.close();
                 }
                 catch (final IOException e) {
-                    IcyExceptionHandler.showErrorMessage(e, true);
+                    IcyLogger.error(CanonicalSimplexProgram.class, e);
                     return;
                 }
                 break;
             }
             case 0: {
-                System.out.println("Basic example with 3 pivots");
-                System.out.println("Optimal is 6.5");
-                System.out.println("Solution is [1.0, 1.0, 0.5, 0.0]");
+                IcyLogger.info(
+                        CanonicalSimplexProgram.class,
+                        "Basic example with 3 pivots",
+                        "Optimal is 6.5",
+                        "Solution is [1.0, 1.0, 0.5, 0.0]"
+                );
                 A = new double[][]{{2, 1, 0, 0},
                         {0, 1, 4, 1},
                         {1, 3, 0, 1}
@@ -758,9 +781,12 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 1: {
-                System.out.println("Example that would cycle with Bland rule.");
-                System.out.println("Optimal score is 1/20.");
-                System.out.println("Solution is [1/25, 0, 1, 0].");
+                IcyLogger.info(
+                        CanonicalSimplexProgram.class,
+                        "Example that would cycle with Bland rule.",
+                        "Optimal score is 1/20.",
+                        "Solution is [1/25, 0, 1, 0]."
+                );
                 A = new double[][]{{1d / 4, -60, -1d / 25, 9},
                         {1d / 2, -90, -1d / 50, 3},
                         {0, 0, 1, 0}
@@ -772,8 +798,11 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 2: {
-                System.out.println("An example with equality constraints");
-                System.out.println("Solution is [0, 4/7, 1 + 5/7, 0, 0].");
+                IcyLogger.info(
+                        CanonicalSimplexProgram.class,
+                        "An example with equality constraints",
+                        "Solution is [0, 4/7, 1 + 5/7, 0, 0]."
+                );
                 A = new double[][]
                         {{5, -4, 13, -2, 1},
                                 {1, -1, 5, -1, 1},
@@ -785,9 +814,12 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 3: {
-                System.out.println("An example with equality constraints and negative right-hand-side");
-                System.out.println("Optimal score is -3 - 1/16.");
-                System.out.println("Solution is [3/16, 1 + 1/4, 0, 5/16].");
+                IcyLogger.info(
+                        CanonicalSimplexProgram.class,
+                        "An example with equality constraints and negative right-hand-side",
+                        "Optimal score is -3 - 1/16.",
+                        "Solution is [3/16, 1 + 1/4, 0, 5/16]."
+                );
                 A = new double[][]
                         {{1, 2, 1, 1},
                                 {1, -2, 2, 1},
@@ -800,8 +832,11 @@ public abstract class CanonicalSimplexProgram {
             }
         }
         if (A == null || b == null || c == null || equality == null) {
-            System.out.println("Missing arguments");
-            System.out.println("Use input option -help to display the manual of the software");
+            IcyLogger.error(
+                    CanonicalSimplexProgram.class,
+                    "Missing arguments",
+                    "Use input option -help to display the manual of the software"
+            );
             return;
         }
         final CanonicalSimplexProgram program = new SimplexLEXICO(A, b, c, maximization, equality);
@@ -811,21 +846,21 @@ public abstract class CanonicalSimplexProgram {
         if (program.solvePrimalSimplex()) {
             final double[] solution = program.solution;
             if (verbose) {
-                System.out.print("Computed solution = [");
+                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed solution = [");
                 for (final double value : solution)
-                    System.out.print(value + ", ");
-                System.out.println("]");
-                System.out.println("Computed score = " + program.tableau0.scoreValue);
-                System.out.println("Computed constraint values:");
+                    IcyLogger.trace(CanonicalSimplexProgram.class, value + ", ");
+                IcyLogger.trace(CanonicalSimplexProgram.class, "]");
+                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed score = " + program.tableau0.scoreValue);
+                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed constraint values:");
                 for (int i = 0; i < A.length; i++) {
                     double v = 0;
                     // compute the constraint
                     for (int j = 0; j < A[i].length; j++)
                         v += A[i][j] * solution[j];
                     if (equality[i])
-                        System.out.println(v + " == " + b[i]);
+                        IcyLogger.trace(CanonicalSimplexProgram.class, v + " == " + b[i]);
                     else
-                        System.out.println(v + " <= " + b[i]);
+                        IcyLogger.trace(CanonicalSimplexProgram.class, v + " <= " + b[i]);
                 }
             }
             if (outputFile != null) {
@@ -841,19 +876,18 @@ public abstract class CanonicalSimplexProgram {
                     out.close();
                 }
                 catch (final IOException e) {
-                    IcyExceptionHandler.showErrorMessage(e, true);
+                    IcyLogger.error(CanonicalSimplexProgram.class, e);
                 }
             }
         }
         else {
-            System.out.println("Solve simplex failed");
+            IcyLogger.error(CanonicalSimplexProgram.class, "Solve simplex failed");
         }
     }
 
     public static void runExampleScenario(final int scenario) {
         if (scenario < 0 || scenario > 3) {
-            System.out.println("Invalid input argument");
-            System.out.println("Scenario indices are: 0, 1, 2 and 3");
+            IcyLogger.error(CanonicalSimplexProgram.class, "Invalid input argument", "Scenario indices are: 0, 1, 2 and 3");
             return;
         }
         boolean maximization = false;
@@ -864,9 +898,12 @@ public abstract class CanonicalSimplexProgram {
         final boolean verbose = true;
         switch (scenario) {
             case 0: {
-                System.out.println("Basic example with 3 pivots");
-                System.out.println("Optimal score is 6.5");
-                System.out.println("Solution is [1.0, 1.0, 0.5, 0.0]");
+                IcyLogger.info(
+                        CanonicalSimplexProgram.class,
+                        "Basic example with 3 pivots",
+                        "Optimal score is 6.5",
+                        "Solution is [1.0, 1.0, 0.5, 0.0]"
+                );
                 A = new double[][]{{2, 1, 0, 0},
                         {0, 1, 4, 1},
                         {1, 3, 0, 1}
@@ -878,9 +915,12 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 1: {
-                System.out.println("Example that would cycle with Bland rule.");
-                System.out.println("Optimal score is 1/20.");
-                System.out.println("Solution is [1/25, 0, 1, 0].");
+                IcyLogger.info(
+                        CanonicalSimplexProgram.class,
+                        "Example that would cycle with Bland rule.",
+                        "Optimal score is 1/20.",
+                        "Solution is [1/25, 0, 1, 0]."
+                );
                 A = new double[][]{{1d / 4, -60, -1d / 25, 9},
                         {1d / 2, -90, -1d / 50, 3},
                         {0, 0, 1, 0}
@@ -892,8 +932,11 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 2: {
-                System.out.println("An example with equality constraints");
-                System.out.println("Solution is [0, 4/7, 1 + 5/7, 0, 0].");
+                IcyLogger.info(
+                        CanonicalSimplexProgram.class,
+                        "An example with equality constraints",
+                        "Solution is [0, 4/7, 1 + 5/7, 0, 0]."
+                );
                 A = new double[][]
                         {{5, -4, 13, -2, 1},
                                 {1, -1, 5, -1, 1},
@@ -905,9 +948,12 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 3: {
-                System.out.println("An example with equality constraints and negative right-hand-side");
-                System.out.println("Optimal score is -3 - 1/16.");
-                System.out.println("Solution is [3/16, 1 + 1/4, 0, 5/16].");
+                IcyLogger.info(
+                        CanonicalSimplexProgram.class,
+                        "An example with equality constraints and negative right-hand-side",
+                        "Optimal score is -3 - 1/16.",
+                        "Solution is [3/16, 1 + 1/4, 0, 5/16]."
+                );
                 A = new double[][]
                         {{1, 2, 1, 1},
                                 {1, -2, 2, 1},
@@ -922,35 +968,31 @@ public abstract class CanonicalSimplexProgram {
         }
         final CanonicalSimplexProgram program = new SimplexLEXICO(A, b, c, maximization, equality);
         if (verbose) {
-            System.out.println();
             program.displayProblemTutorial();
         }
         if (program.solvePrimalSimplex()) {
             final double[] solution = program.solution;
             if (verbose) {
-                System.out.println();
-                System.out.print("Computed solution = [");
+                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed solution = [");
                 for (final double value : solution)
-                    System.out.print(value + ", ");
-                System.out.println("]");
-                System.out.println();
-                System.out.println("Computed score = " + program.tableau0.scoreValue);
-                System.out.println();
-                System.out.println("Computed constraint values:");
+                    IcyLogger.trace(CanonicalSimplexProgram.class, value + ", ");
+                IcyLogger.trace(CanonicalSimplexProgram.class, "]");
+                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed score = " + program.tableau0.scoreValue);
+                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed constraint values:");
                 for (int i = 0; i < A.length; i++) {
                     double v = 0;
                     // compute the constraint
                     for (int j = 0; j < A[i].length; j++)
                         v += A[i][j] * solution[j];
                     if (equality[i])
-                        System.out.println(v + " == " + b[i]);
+                        IcyLogger.trace(CanonicalSimplexProgram.class, v + " == " + b[i]);
                     else
-                        System.out.println(v + " <= " + b[i]);
+                        IcyLogger.trace(CanonicalSimplexProgram.class, v + " <= " + b[i]);
                 }
             }
         }
         else {
-            System.out.println("Solve simplex failed");
+            IcyLogger.error(CanonicalSimplexProgram.class, "Solve simplex failed");
         }
     }
 }

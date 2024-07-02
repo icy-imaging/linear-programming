@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,12 +18,14 @@
 
 package plugins.nchenouard.linearprogrammingfullsimplex;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Implements the maximum score rule for pivoting for the Simplex algorithm.
  * <p>
  * Warning: this rule shows high probability of cycling.
  * <p>
- * Part of the Linear Programming plugin for ICY http://icy.bioimageanalysis.org
+ * Part of the Linear Programming plugin for ICY <a href="https://icy.bioimageanalysis.org">https://icy.bioimageanalysis.org</a>
  *
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
  */
@@ -96,7 +98,7 @@ public class SimplexMAX extends CanonicalSimplexProgram {
      * @return the row index in the tableau
      */
     @Override
-    protected int getRowidx(final TableauWithSlackVariables tableau, final int colIdx) {
+    protected int getRowidx(final @NotNull TableauWithSlackVariables tableau, final int colIdx) {
         boolean found = false;
         double maxVal = -1;
         int rowIdx = -1;

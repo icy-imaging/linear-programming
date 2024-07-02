@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,6 +18,8 @@
 
 package plugins.nchenouard.linearprogrammingfullsimplex;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Tableau used for Gauss-Jordan elimination in which slack variables are given a 1 score depending on whether constraints are equalities.
  * Slack variables are added to the set of column vectors in a leading position.
@@ -27,7 +29,6 @@ package plugins.nchenouard.linearprogrammingfullsimplex;
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
  */
 public class TableauMinSlackObjective extends TableauWithSlackVariables {
-
     /**
      * Create the tableau based on a linear program. The scores in the tableau
      * will not be initialized to their standard value but set to handle
@@ -35,7 +36,7 @@ public class TableauMinSlackObjective extends TableauWithSlackVariables {
      *
      * @param simplexProgram parameters defining the linear optimization problem.
      */
-    public TableauMinSlackObjective(final CanonicalSimplexProgram simplexProgram) {
+    public TableauMinSlackObjective(final @NotNull CanonicalSimplexProgram simplexProgram) {
         super(simplexProgram.parameters.A);
         // now make the slacks feasible
         xCol = simplexProgram.parameters.b.clone(); // equal to b since we start with unit vectors as initial left vectors

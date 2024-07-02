@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2023. Institut Pasteur.
+ * Copyright (c) 2010-2024. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -18,20 +18,22 @@
 
 package plugins.nchenouard.linearprogrammingfullsimplex;
 
-import icy.gui.frame.progress.AnnounceFrame;
-import icy.plugin.abstract_.PluginActionable;
+import org.bioimageanalysis.icy.extension.plugin.abstract_.PluginActionable;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
+import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
+import org.bioimageanalysis.icy.gui.frame.progress.AnnounceFrame;
+import org.bioimageanalysis.icy.system.logging.IcyLogger;
 
+@IcyPluginName("Linear Programming Example")
+@IcyPluginIcon(path = "/linear-programming.png")
 public class LinearProgrammingICYPlugin extends PluginActionable {
     @Override
     public void run() {
         new AnnounceFrame("It is now running a series of example optimization problems. See the console for the output.");
-        new AnnounceFrame("This is a utility plugin, intended to be used by other ICY plugins.");
+        new AnnounceFrame("This is an utility plugin, intended to be used by other ICY plugins.");
         for (int i = 0; i < 3; i++) {
-            System.out.println();
-            System.out.println("=== Linear Programming test scenario " + i + " ===");
-            System.out.println();
+            IcyLogger.info(this.getClass(), "=== Linear Programming test scenario " + i + " ===");
             CanonicalSimplexProgram.runExampleScenario(i);
         }
     }
-
 }
