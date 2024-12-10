@@ -93,24 +93,24 @@ public class SimplexBLAND extends CanonicalSimplexProgram {
      */
     @Override
     protected int getPivotColumn(final TableauWithSlackVariables tableau, final boolean max) {
+        int idx = -1;
+
         if (max) {
-            int idx = -1;
             for (int i = 0; i < tableau.scoreRow.length; i++)
                 if (tableau.scoreRow[i] < 0 && tableau.originalColOrder[i] >= 0) {
                     idx = i;
                     break;
                 }
-            return idx;
         }
         else {
-            int idx = -1;
             for (int i = 0; i < tableau.scoreRow.length; i++)
                 if (tableau.scoreRow[i] > 0 && tableau.originalColOrder[i] >= 0) {
                     idx = i;
                     break;
                 }
-            return idx;
         }
+
+        return idx;
     }
 
     /**

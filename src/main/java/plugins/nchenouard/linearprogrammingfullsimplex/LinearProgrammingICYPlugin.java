@@ -25,7 +25,7 @@ import org.bioimageanalysis.icy.gui.frame.progress.AnnounceFrame;
 import org.bioimageanalysis.icy.system.logging.IcyLogger;
 
 @IcyPluginName("Linear Programming Example")
-@IcyPluginIcon(path = "/linear-programming.png")
+@IcyPluginIcon(path = "/plugins/nchenouard/linearprogramming/linear-programming.png")
 public class LinearProgrammingICYPlugin extends PluginActionable {
     @Override
     public void run() {

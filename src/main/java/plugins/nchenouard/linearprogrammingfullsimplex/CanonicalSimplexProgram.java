@@ -43,7 +43,7 @@ import java.io.*;
  * A[i]*x &lt;= b if equalityConstraints[i]
  * <p>
  * <p>
- * Part of the Linear Programming plugin for ICY http://icy.bioimageanalysis.org
+ * Part of the Linear Programming plugin for ICY <a href="https://icy.bioimageanalysis.org">https://icy.bioimageanalysis.org</a>
  *
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
  */
@@ -266,7 +266,7 @@ public abstract class CanonicalSimplexProgram {
         //			for (int i = 0; i < numConstraints; i ++)
         //				if (parameters.equalityConstraints[i])
         //					c[i] = 1;//put weights to slack variables which correspond to equalities
-        ////			tableau0.solverWithLPSolve(c, b0, false);
+        //			tableau0.solverWithLPSolve(c, b0, false);
         //		}
         if (!success)
             return false;
@@ -530,7 +530,8 @@ public abstract class CanonicalSimplexProgram {
     /**
      * @return Manual of the library for stand-alone use through command line
      */
-    public static String getHelp() {
+    @Contract(pure = true)
+    public static @NotNull String getHelp() {
         return """
                 Run the solver for example problems or for a user-defined system
                 Empty arguments to use the default example.
@@ -545,7 +546,7 @@ public abstract class CanonicalSimplexProgram {
                 Example arguments: java -jar linearProgrammingICY.jar -c c.txt -A A.txt -b b.txt -e eq.txt -max -o solution.txt\
                 Each text file must contain a series of double values separated by ',' in a single line, except for the constraint file which contains one line per constraint.
                 For the equality file '0' stands for 'false' and '1' for true.
-
+                
                 Version 1.0. April 2014. Author: Nicolas Chenouard. nicolas.chenouard.dev@gmail.com. Licence GPL V3.0""";
     }
 
@@ -904,7 +905,8 @@ public abstract class CanonicalSimplexProgram {
                         "Optimal score is 6.5",
                         "Solution is [1.0, 1.0, 0.5, 0.0]"
                 );
-                A = new double[][]{{2, 1, 0, 0},
+                A = new double[][]{
+                        {2, 1, 0, 0},
                         {0, 1, 4, 1},
                         {1, 3, 0, 1}
                 };
@@ -921,7 +923,8 @@ public abstract class CanonicalSimplexProgram {
                         "Optimal score is 1/20.",
                         "Solution is [1/25, 0, 1, 0]."
                 );
-                A = new double[][]{{1d / 4, -60, -1d / 25, 9},
+                A = new double[][]{
+                        {1d / 4, -60, -1d / 25, 9},
                         {1d / 2, -90, -1d / 50, 3},
                         {0, 0, 1, 0}
                 };
@@ -937,10 +940,10 @@ public abstract class CanonicalSimplexProgram {
                         "An example with equality constraints",
                         "Solution is [0, 4/7, 1 + 5/7, 0, 0]."
                 );
-                A = new double[][]
-                        {{5, -4, 13, -2, 1},
-                                {1, -1, 5, -1, 1},
-                        };
+                A = new double[][]{
+                        {5, -4, 13, -2, 1},
+                        {1, -1, 5, -1, 1},
+                };
                 b = new double[]{20, 8};
                 c = new double[]{1, 6, -7, 1, 5};
                 equality = new boolean[]{true, true};
@@ -954,11 +957,11 @@ public abstract class CanonicalSimplexProgram {
                         "Optimal score is -3 - 1/16.",
                         "Solution is [3/16, 1 + 1/4, 0, 5/16]."
                 );
-                A = new double[][]
-                        {{1, 2, 1, 1},
-                                {1, -2, 2, 1},
-                                {3, -1, 0, -1}
-                        };
+                A = new double[][]{
+                        {1, 2, 1, 1},
+                        {1, -2, 2, 1},
+                        {3, -1, 0, -1}
+                };
                 b = new double[]{3, -2, -1};
                 c = new double[]{2, -3, 1, 1};
                 equality = new boolean[]{true, true, true};

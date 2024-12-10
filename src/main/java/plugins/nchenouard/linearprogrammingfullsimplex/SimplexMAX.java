@@ -62,32 +62,28 @@ public class SimplexMAX extends CanonicalSimplexProgram {
      */
     @Override
     protected int getPivotColumn(final TableauWithSlackVariables tableau, final boolean max) {
+        int idx = -1;
+        double score = 0;
+
         if (max) {
-            int idx = -1;
-            double score = 0;
             for (int i = 0; i < tableau.scoreRow.length; i++)
                 if (tableau.scoreRow[i] < score && tableau.originalColOrder[i] >= 0) {
                     score = tableau.scoreRow[i];
                     idx = i;
                 }
-            if (idx >= 0)
-                return idx;
-            else
-                return -1;
         }
         else {
-            int idx = -1;
-            double score = 0;
             for (int i = 0; i < tableau.scoreRow.length; i++)
                 if (tableau.scoreRow[i] > score && tableau.originalColOrder[i] >= 0) {
                     score = tableau.scoreRow[i];
                     idx = i;
                 }
-            if (idx >= 0)
-                return idx;
-            else
-                return -1;
         }
+
+        if (idx >= 0)
+            return idx;
+        else
+            return -1;
     }
 
     /**
