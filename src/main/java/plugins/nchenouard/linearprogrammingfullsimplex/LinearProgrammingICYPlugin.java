@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2024. Institut Pasteur.
+ * Copyright (c) 2010-2026. Institut Pasteur.
  *
  * This file is part of Icy.
  * Icy is free software: you can redistribute it and/or modify
@@ -19,13 +19,11 @@
 package plugins.nchenouard.linearprogrammingfullsimplex;
 
 import org.bioimageanalysis.icy.extension.plugin.abstract_.PluginActionable;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginIcon;
 import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
 import org.bioimageanalysis.icy.gui.frame.progress.AnnounceFrame;
 import org.bioimageanalysis.icy.system.logging.IcyLogger;
 
 @IcyPluginName("Linear Programming Example")
-@IcyPluginIcon(path = "/plugins/nchenouard/linearprogramming/linear-programming.png")
 public class LinearProgrammingICYPlugin extends PluginActionable {
     @Override
     public void run() {
