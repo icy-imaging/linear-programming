@@ -18,10 +18,10 @@
 
 package plugins.nchenouard.linearprogrammingfullsimplex;
 
-import org.bioimageanalysis.icy.extension.plugin.abstract_.PluginActionable;
-import org.bioimageanalysis.icy.extension.plugin.annotation_.IcyPluginName;
-import org.bioimageanalysis.icy.gui.frame.progress.AnnounceFrame;
-import org.bioimageanalysis.icy.system.logging.IcyLogger;
+import fr.icy.extension.plugin.abstract_.PluginActionable;
+import fr.icy.extension.plugin.annotation_.IcyPluginName;
+import fr.icy.gui.frame.progress.AnnounceFrame;
+import fr.icy.system.logging.IcyLogger;
 
 @IcyPluginName("Linear Programming Example")
 public class LinearProgrammingICYPlugin extends PluginActionable {
