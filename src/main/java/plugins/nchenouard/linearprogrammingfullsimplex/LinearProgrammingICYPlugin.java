@@ -21,16 +21,21 @@ package plugins.nchenouard.linearprogrammingfullsimplex;
 import fr.icy.extension.plugin.abstract_.PluginActionable;
 import fr.icy.extension.plugin.annotation_.IcyPluginName;
 import fr.icy.gui.frame.progress.AnnounceFrame;
-import fr.icy.system.logging.IcyLogger;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @IcyPluginName("Linear Programming Example")
 public class LinearProgrammingICYPlugin extends PluginActionable {
+    private static final Logger LOGGER = Logger.getLogger(LinearProgrammingICYPlugin.class.getName());
+
     @Override
     public void run() {
         new AnnounceFrame("It is now running a series of example optimization problems. See the console for the output.");
         new AnnounceFrame("This is an utility plugin, intended to be used by other ICY plugins.");
         for (int i = 0; i < 3; i++) {
-            IcyLogger.info(this.getClass(), "=== Linear Programming test scenario " + i + " ===");
+            if (LOGGER.isLoggable(Level.INFO))
+                LOGGER.log(Level.INFO, "=== Linear Programming test scenario " + i + " ===");
             CanonicalSimplexProgram.runExampleScenario(i);
         }
     }

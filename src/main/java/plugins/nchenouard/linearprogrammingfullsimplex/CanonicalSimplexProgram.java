@@ -18,11 +18,13 @@
 
 package plugins.nchenouard.linearprogrammingfullsimplex;
 
-import fr.icy.system.logging.IcyLogger;
+import fr.icy.shared.logging.CustomLevel;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Linear program for the Simplex algorithm. Inheriting classes should implement
@@ -48,6 +50,7 @@ import java.io.*;
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
  */
 public abstract class CanonicalSimplexProgram {
+    private static final Logger LOGGER = Logger.getLogger(CanonicalSimplexProgram.class.getName());
     /**
      * Parameters defining the linear programming problem
      */
@@ -75,6 +78,7 @@ public abstract class CanonicalSimplexProgram {
     /**
      * Display detail of steps
      */
+    @Deprecated(forRemoval = true)
     public boolean verbose = false;
 
     /**
@@ -225,8 +229,8 @@ public abstract class CanonicalSimplexProgram {
     private boolean solveWithInequalities(final boolean compareWithLPSolve) {
         // Canonical form: initial tableau is built by introducing unit vectors
         solvePhaseICanonicalSimplex();
-        if (verbose) {
-            IcyLogger.trace(this.getClass(), "Tableau after phase 1: ");
+        if (LOGGER.isLoggable(CustomLevel.TRACE)) {
+            LOGGER.log(CustomLevel.TRACE, "Tableau after phase 1: ");
             tableau0.printTableau();
         }
         // Phase II: optimisation by Gauss-Jordan replacement of non-basic columns
@@ -240,8 +244,9 @@ public abstract class CanonicalSimplexProgram {
      */
     private boolean solveWithEqualities(final boolean compareWithLPSolve) {
         tableau0 = new TableauMinSlackObjective(this);
-        if (verbose)
+        if (LOGGER.isLoggable(CustomLevel.TRACE)) {
             tableau0.printTableau();
+        }
         // check for some duplicates in tableau0 columns
 //		for (int i = 0; i < tableau0.columnVectors.length; i++)
 //		{
@@ -270,8 +275,8 @@ public abstract class CanonicalSimplexProgram {
         //		}
         if (!success)
             return false;
-        if (verbose) {
-            IcyLogger.trace(this.getClass(), "Phase 1 ");
+        if (LOGGER.isLoggable(CustomLevel.TRACE)) {
+            LOGGER.log(CustomLevel.TRACE, "Phase 1 ");
             tableau0.printTableau();
         }
         if (Math.abs(tableau0.scoreValue) < tol) // optimal score should be 0
@@ -338,23 +343,23 @@ public abstract class CanonicalSimplexProgram {
                     break;
                 }
                 else {
-                    if (verbose)
-                        IcyLogger.trace(this.getClass(), "replacement: row = " + rowIdx + ", column  = " + colIdx);
+                    if (LOGGER.isLoggable(CustomLevel.TRACE))
+                        LOGGER.log(CustomLevel.TRACE, "replacement: row = " + rowIdx + ", column  = " + colIdx);
                     tableau.pivot(colIdx, rowIdx);
                 }
             }
-            if (verbose) {
-                IcyLogger.trace(this.getClass(), "Tableau at iteration: ");
+            if (LOGGER.isLoggable(CustomLevel.TRACE)) {
+                LOGGER.log(CustomLevel.TRACE, "Tableau at iteration: ");
                 tableau.printTableau();
             }
         }
-        if (verbose) {
-            IcyLogger.trace(this.getClass(), "Final tableau: ");
+        if (LOGGER.isLoggable(CustomLevel.TRACE)) {
+            LOGGER.log(CustomLevel.TRACE, "Final tableau: ");
             tableau.printTableau();
         }
         if (!feasible) {
-            if (verbose)
-                IcyLogger.trace(this.getClass(), "UNFEASIBLE problem");
+            if (LOGGER.isLoggable(CustomLevel.TRACE))
+                LOGGER.log(CustomLevel.TRACE, "UNFEASIBLE problem");
             return false;
         }
         else {
@@ -406,7 +411,8 @@ public abstract class CanonicalSimplexProgram {
                 for (int j = 0; j < solution.length; j++) {
                     v += A0[i][j] * solution[j];
                 }
-                IcyLogger.info(this.getClass(), v + "<?>" + b0[i]);
+                if (LOGGER.isLoggable(Level.INFO))
+                    LOGGER.log(Level.INFO, v + "<?>" + b0[i]);
             }
         }
     }
@@ -467,35 +473,39 @@ public abstract class CanonicalSimplexProgram {
 
 
     public void displayProblem() {
-        IcyLogger.info(this.getClass(), "Linear Programming problem max c'x st. Ax <= b, x >= 0 and some equality contraints defined by eq");
+        if (!LOGGER.isLoggable(Level.INFO))
+            return;
+        LOGGER.log(Level.INFO, "Linear Programming problem max c'x st. Ax <= b, x >= 0 and some equality contraints defined by eq");
         if (parameters.maximization)
-            IcyLogger.info(this.getClass(), "Maximization problem");
+            LOGGER.log(Level.INFO, "Maximization problem");
         else
-            IcyLogger.info(this.getClass(), "Minimization problem");
-        IcyLogger.info(this.getClass(), "c = [");
+            LOGGER.log(Level.INFO, "Minimization problem");
+        LOGGER.log(Level.INFO, "c = [");
         for (int i = 0; i < parameters.c.length; i++)
-            IcyLogger.info(this.getClass(), parameters.c[i] + ", ");
-        IcyLogger.info(this.getClass(), "]");
-        IcyLogger.info(this.getClass(), "b = [");
+            LOGGER.log(Level.INFO, parameters.c[i] + ", ");
+        LOGGER.log(Level.INFO, "]");
+        LOGGER.log(Level.INFO, "b = [");
         for (int i = 0; i < parameters.b.length; i++)
-            IcyLogger.info(this.getClass(), parameters.b[i] + ", ");
-        IcyLogger.info(this.getClass(), "]");
-        IcyLogger.info(this.getClass(), "eq = [");
+            LOGGER.log(Level.INFO, parameters.b[i] + ", ");
+        LOGGER.log(Level.INFO, "]");
+        LOGGER.log(Level.INFO, "eq = [");
         for (int i = 0; i < parameters.equalityConstraints.length; i++)
-            IcyLogger.info(this.getClass(), parameters.equalityConstraints[i] + ", ");
-        IcyLogger.info(this.getClass(), "]");
-        IcyLogger.info(this.getClass(), "A = [");
+            LOGGER.log(Level.INFO, parameters.equalityConstraints[i] + ", ");
+        LOGGER.log(Level.INFO, "]");
+        LOGGER.log(Level.INFO, "A = [");
         for (int i = 0; i < parameters.A.length; i++) {
-            IcyLogger.info(this.getClass(), "[");
+            LOGGER.log(Level.INFO, "[");
             for (int j = 0; j < parameters.A[i].length; j++)
-                IcyLogger.info(this.getClass(), parameters.A[i][j] + ", ");
-            IcyLogger.info(this.getClass(), "],");
+                LOGGER.log(Level.INFO, parameters.A[i][j] + ", ");
+            LOGGER.log(Level.INFO, "],");
         }
-        IcyLogger.info(this.getClass(), "]");
+        LOGGER.log(Level.INFO, "]");
     }
 
     public void displayProblemTutorial() {
-        IcyLogger.info(this.getClass(), "Linear Programming problem:");
+        if (!LOGGER.isLoggable(Level.INFO))
+            return;
+        LOGGER.log(Level.INFO, "Linear Programming problem:");
         StringBuilder line = new StringBuilder();
         if (parameters.maximization)
             line.append("max_x");
@@ -508,8 +518,8 @@ public abstract class CanonicalSimplexProgram {
             else
                 line.append(" - ").append(Math.abs(parameters.c[i])).append("*x[").append(i).append("]");
         }
-        IcyLogger.info(this.getClass(), line.toString());
-        IcyLogger.info(this.getClass(), "Such that x >= 0 and:");
+        LOGGER.log(Level.INFO, line.toString());
+        LOGGER.log(Level.INFO, "Such that x >= 0 and:");
         for (int i = 0; i < parameters.b.length; i++) {
             line = new StringBuilder();
             for (int j = 0; j < parameters.A[i].length; j++) {
@@ -523,7 +533,7 @@ public abstract class CanonicalSimplexProgram {
             else
                 line.append(" <= ");
             line.append(parameters.b[i]);
-            IcyLogger.info(this.getClass(), line.toString());
+            LOGGER.log(Level.INFO, line.toString());
         }
     }
 
@@ -554,7 +564,8 @@ public abstract class CanonicalSimplexProgram {
      * Display the manual of the library for stand-alone use through command line
      */
     public static void displayHelp() {
-        IcyLogger.info(CanonicalSimplexProgram.class, getHelp());
+        if (LOGGER.isLoggable(Level.INFO))
+            LOGGER.log(Level.INFO, getHelp());
     }
 
     /**
@@ -588,28 +599,19 @@ public abstract class CanonicalSimplexProgram {
                     scenario = Integer.parseInt(args[0]);
                 }
                 catch (final NumberFormatException e) {
-                    IcyLogger.error(
-                            CanonicalSimplexProgram.class,
-                            "Invalid input argument",
-                            "Use input option -help to display the manual of the software"
-                    );
+                    if (LOGGER.isLoggable(Level.SEVERE))
+                        LOGGER.log(Level.SEVERE, "Invalid input argument. Use input option -help to display the manual of the software", e);
                     return;
                 }
             }
         }
         else {
-            IcyLogger.info(
-                    CanonicalSimplexProgram.class,
-                    "Solving a default simple linear problem with the Simplex algorithm.",
-                    "Enter -help for the manual explicating the customization options."
-            );
+            if (LOGGER.isLoggable(Level.INFO))
+                LOGGER.log(Level.INFO, "Solving a default simple linear problem with the Simplex algorithm. Enter -help for the manual explicating the customization options.");
         }
         if (scenario < -1 || scenario > 3) {
-            IcyLogger.error(
-                    CanonicalSimplexProgram.class,
-                    "Invalid input argument",
-                    "Use input option -help to display the manual of the software"
-            );
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Invalid input argument. Use input option -help to display the manual of the software");
             return;
         }
         boolean maximization = false;
@@ -642,11 +644,8 @@ public abstract class CanonicalSimplexProgram {
                     }
                 }
                 if (fileA == null) {
-                    IcyLogger.error(
-                            CanonicalSimplexProgram.class,
-                            "Missing -A input argument",
-                            "Use input option -help to display the manual of the software"
-                    );
+                    if (LOGGER.isLoggable(Level.SEVERE))
+                        LOGGER.log(Level.SEVERE, "Missing -A input argument. Use input option -help to display the manual of the software");
                     return;
                 }
                 String fileB = null;
@@ -657,11 +656,8 @@ public abstract class CanonicalSimplexProgram {
                     }
                 }
                 if (fileB == null) {
-                    IcyLogger.error(
-                            CanonicalSimplexProgram.class,
-                            "Missing -b input argument",
-                            "Use input option -help to display the manual of the software"
-                    );
+                    if (LOGGER.isLoggable(Level.SEVERE))
+                        LOGGER.log(Level.SEVERE, "Missing -b input argument. Use input option -help to display the manual of the software");
                     return;
                 }
 
@@ -673,11 +669,8 @@ public abstract class CanonicalSimplexProgram {
                     }
                 }
                 if (fileC == null) {
-                    IcyLogger.error(
-                            CanonicalSimplexProgram.class,
-                            "Missing -c input argument",
-                            "Use input option -help to display the manual of the software"
-                    );
+                    if (LOGGER.isLoggable(Level.SEVERE))
+                        LOGGER.log(Level.SEVERE, "Missing -c input argument. Use input option -help to display the manual of the software");
                     return;
                 }
                 for (int i = 0; i < args.length - 1; i++) {
@@ -694,11 +687,8 @@ public abstract class CanonicalSimplexProgram {
                     }
                 }
                 if (fileE == null) {
-                    IcyLogger.error(
-                            CanonicalSimplexProgram.class,
-                            "Missing -e input argument",
-                            "Use input option -help to display the manual of the software"
-                    );
+                    if (LOGGER.isLoggable(Level.SEVERE))
+                        LOGGER.log(Level.SEVERE, "Missing -e input argument. Use input option -help to display the manual of the software");
                     return;
                 }
                 try {
@@ -759,19 +749,17 @@ public abstract class CanonicalSimplexProgram {
                     fis.close();
                 }
                 catch (final IOException e) {
-                    IcyLogger.error(CanonicalSimplexProgram.class, e);
+                    if (LOGGER.isLoggable(Level.SEVERE))
+                        LOGGER.log(Level.SEVERE, "Error reading file.", e);
                     return;
                 }
                 break;
             }
             case 0: {
-                IcyLogger.info(
-                        CanonicalSimplexProgram.class,
-                        "Basic example with 3 pivots",
-                        "Optimal is 6.5",
-                        "Solution is [1.0, 1.0, 0.5, 0.0]"
-                );
-                A = new double[][]{{2, 1, 0, 0},
+                if (LOGGER.isLoggable(Level.INFO))
+                    LOGGER.log(Level.INFO, "Basic example with 3 pivots. Optimal is 6.5. Solution is [1.0, 1.0, 0.5, 0.0]");
+                A = new double[][]{
+                        {2, 1, 0, 0},
                         {0, 1, 4, 1},
                         {1, 3, 0, 1}
                 };
@@ -782,13 +770,11 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 1: {
-                IcyLogger.info(
-                        CanonicalSimplexProgram.class,
-                        "Example that would cycle with Bland rule.",
-                        "Optimal score is 1/20.",
-                        "Solution is [1/25, 0, 1, 0]."
-                );
-                A = new double[][]{{1d / 4, -60, -1d / 25, 9},
+
+                if (LOGGER.isLoggable(Level.INFO))
+                    LOGGER.log(Level.INFO, "Example that would cycle with Bland rule. Optimal score is 1/20. Solution is [1/25, 0, 1, 0].");
+                A = new double[][]{
+                        {1d / 4, -60, -1d / 25, 9},
                         {1d / 2, -90, -1d / 50, 3},
                         {0, 0, 1, 0}
                 };
@@ -799,15 +785,12 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 2: {
-                IcyLogger.info(
-                        CanonicalSimplexProgram.class,
-                        "An example with equality constraints",
-                        "Solution is [0, 4/7, 1 + 5/7, 0, 0]."
-                );
-                A = new double[][]
-                        {{5, -4, 13, -2, 1},
-                                {1, -1, 5, -1, 1},
-                        };
+                if (LOGGER.isLoggable(Level.INFO))
+                    LOGGER.log(Level.INFO, "An example with equality constraints. Solution is [0, 4/7, 1 + 5/7, 0, 0].");
+                A = new double[][]{
+                        {5, -4, 13, -2, 1},
+                        {1, -1, 5, -1, 1},
+                };
                 b = new double[]{20, 8};
                 c = new double[]{1, 6, -7, 1, 5};
                 equality = new boolean[]{true, true};
@@ -815,17 +798,13 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 3: {
-                IcyLogger.info(
-                        CanonicalSimplexProgram.class,
-                        "An example with equality constraints and negative right-hand-side",
-                        "Optimal score is -3 - 1/16.",
-                        "Solution is [3/16, 1 + 1/4, 0, 5/16]."
-                );
-                A = new double[][]
-                        {{1, 2, 1, 1},
-                                {1, -2, 2, 1},
-                                {3, -1, 0, -1}
-                        };
+                if (LOGGER.isLoggable(Level.INFO))
+                    LOGGER.log(Level.INFO, "An example with equality constraints and negative right-hand-side. Optimal score is -3 - 1/16. Solution is [3/16, 1 + 1/4, 0, 5/16].");
+                A = new double[][]{
+                        {1, 2, 1, 1},
+                        {1, -2, 2, 1},
+                        {3, -1, 0, -1}
+                };
                 b = new double[]{3, -2, -1};
                 c = new double[]{2, -3, 1, 1};
                 equality = new boolean[]{true, true, true};
@@ -833,11 +812,8 @@ public abstract class CanonicalSimplexProgram {
             }
         }
         if (A == null || b == null || c == null || equality == null) {
-            IcyLogger.error(
-                    CanonicalSimplexProgram.class,
-                    "Missing arguments",
-                    "Use input option -help to display the manual of the software"
-            );
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Missing arguments. Use input option -help to display the manual of the software");
             return;
         }
         final CanonicalSimplexProgram program = new SimplexLEXICO(A, b, c, maximization, equality);
@@ -847,21 +823,23 @@ public abstract class CanonicalSimplexProgram {
         if (program.solvePrimalSimplex()) {
             final double[] solution = program.solution;
             if (verbose) {
-                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed solution = [");
-                for (final double value : solution)
-                    IcyLogger.trace(CanonicalSimplexProgram.class, value + ", ");
-                IcyLogger.trace(CanonicalSimplexProgram.class, "]");
-                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed score = " + program.tableau0.scoreValue);
-                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed constraint values:");
-                for (int i = 0; i < A.length; i++) {
-                    double v = 0;
-                    // compute the constraint
-                    for (int j = 0; j < A[i].length; j++)
-                        v += A[i][j] * solution[j];
-                    if (equality[i])
-                        IcyLogger.trace(CanonicalSimplexProgram.class, v + " == " + b[i]);
-                    else
-                        IcyLogger.trace(CanonicalSimplexProgram.class, v + " <= " + b[i]);
+                if (LOGGER.isLoggable(CustomLevel.TRACE)) {
+                    LOGGER.log(CustomLevel.TRACE, "Computed solution = [");
+                    for (final double value : solution)
+                        LOGGER.log(CustomLevel.TRACE, value + ", ");
+                    LOGGER.log(CustomLevel.TRACE, "]");
+                    LOGGER.log(CustomLevel.TRACE, "Computed score = " + program.tableau0.scoreValue);
+                    LOGGER.log(CustomLevel.TRACE, "Computed constraint values:");
+                    for (int i = 0; i < A.length; i++) {
+                        double v = 0;
+                        // compute the constraint
+                        for (int j = 0; j < A[i].length; j++)
+                            v += A[i][j] * solution[j];
+                        if (equality[i])
+                            LOGGER.log(CustomLevel.TRACE, v + " == " + b[i]);
+                        else
+                            LOGGER.log(CustomLevel.TRACE, v + " <= " + b[i]);
+                    }
                 }
             }
             if (outputFile != null) {
@@ -877,18 +855,21 @@ public abstract class CanonicalSimplexProgram {
                     out.close();
                 }
                 catch (final IOException e) {
-                    IcyLogger.error(CanonicalSimplexProgram.class, e);
+                    if (LOGGER.isLoggable(Level.SEVERE))
+                        LOGGER.log(Level.SEVERE, "Error while trying to write in file.", e);
                 }
             }
         }
         else {
-            IcyLogger.error(CanonicalSimplexProgram.class, "Solve simplex failed");
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Solve simplex failed");
         }
     }
 
     public static void runExampleScenario(final int scenario) {
         if (scenario < 0 || scenario > 3) {
-            IcyLogger.error(CanonicalSimplexProgram.class, "Invalid input argument", "Scenario indices are: 0, 1, 2 and 3");
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Invalid input argument, Scenario indices are: 0, 1, 2 and 3");
             return;
         }
         boolean maximization = false;
@@ -899,12 +880,8 @@ public abstract class CanonicalSimplexProgram {
         final boolean verbose = true;
         switch (scenario) {
             case 0: {
-                IcyLogger.info(
-                        CanonicalSimplexProgram.class,
-                        "Basic example with 3 pivots",
-                        "Optimal score is 6.5",
-                        "Solution is [1.0, 1.0, 0.5, 0.0]"
-                );
+                if (LOGGER.isLoggable(Level.INFO))
+                    LOGGER.log(Level.INFO, "Basic example with 3 pivots. Optimal score is 6.5. Solution is [1.0, 1.0, 0.5, 0.0]");
                 A = new double[][]{
                         {2, 1, 0, 0},
                         {0, 1, 4, 1},
@@ -917,12 +894,8 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 1: {
-                IcyLogger.info(
-                        CanonicalSimplexProgram.class,
-                        "Example that would cycle with Bland rule.",
-                        "Optimal score is 1/20.",
-                        "Solution is [1/25, 0, 1, 0]."
-                );
+                if (LOGGER.isLoggable(Level.INFO))
+                    LOGGER.log(Level.INFO, "Example that would cycle with Bland rule. Optimal score is 1/20. Solution is [1/25, 0, 1, 0].");
                 A = new double[][]{
                         {1d / 4, -60, -1d / 25, 9},
                         {1d / 2, -90, -1d / 50, 3},
@@ -935,11 +908,8 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 2: {
-                IcyLogger.info(
-                        CanonicalSimplexProgram.class,
-                        "An example with equality constraints",
-                        "Solution is [0, 4/7, 1 + 5/7, 0, 0]."
-                );
+                if (LOGGER.isLoggable(Level.INFO))
+                    LOGGER.log(Level.INFO, "An example with equality constraints. Solution is [0, 4/7, 1 + 5/7, 0, 0].");
                 A = new double[][]{
                         {5, -4, 13, -2, 1},
                         {1, -1, 5, -1, 1},
@@ -951,12 +921,8 @@ public abstract class CanonicalSimplexProgram {
                 break;
             }
             case 3: {
-                IcyLogger.info(
-                        CanonicalSimplexProgram.class,
-                        "An example with equality constraints and negative right-hand-side",
-                        "Optimal score is -3 - 1/16.",
-                        "Solution is [3/16, 1 + 1/4, 0, 5/16]."
-                );
+                if (LOGGER.isLoggable(Level.INFO))
+                    LOGGER.log(Level.INFO, "An example with equality constraints and negative right-hand-side. Optimal score is -3 - 1/16. Solution is [3/16, 1 + 1/4, 0, 5/16].");
                 A = new double[][]{
                         {1, 2, 1, 1},
                         {1, -2, 2, 1},
@@ -976,26 +942,29 @@ public abstract class CanonicalSimplexProgram {
         if (program.solvePrimalSimplex()) {
             final double[] solution = program.solution;
             if (verbose) {
-                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed solution = [");
-                for (final double value : solution)
-                    IcyLogger.trace(CanonicalSimplexProgram.class, value + ", ");
-                IcyLogger.trace(CanonicalSimplexProgram.class, "]");
-                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed score = " + program.tableau0.scoreValue);
-                IcyLogger.trace(CanonicalSimplexProgram.class, "Computed constraint values:");
-                for (int i = 0; i < A.length; i++) {
-                    double v = 0;
-                    // compute the constraint
-                    for (int j = 0; j < A[i].length; j++)
-                        v += A[i][j] * solution[j];
-                    if (equality[i])
-                        IcyLogger.trace(CanonicalSimplexProgram.class, v + " == " + b[i]);
-                    else
-                        IcyLogger.trace(CanonicalSimplexProgram.class, v + " <= " + b[i]);
+                if (LOGGER.isLoggable(CustomLevel.TRACE)) {
+                    LOGGER.log(CustomLevel.TRACE, "Computed solution = [");
+                    for (final double value : solution)
+                        LOGGER.log(CustomLevel.TRACE, value + ", ");
+                    LOGGER.log(CustomLevel.TRACE, "]");
+                    LOGGER.log(CustomLevel.TRACE, "Computed score = " + program.tableau0.scoreValue);
+                    LOGGER.log(CustomLevel.TRACE, "Computed constraint values:");
+                    for (int i = 0; i < A.length; i++) {
+                        double v = 0;
+                        // compute the constraint
+                        for (int j = 0; j < A[i].length; j++)
+                            v += A[i][j] * solution[j];
+                        if (equality[i])
+                            LOGGER.log(CustomLevel.TRACE, v + " == " + b[i]);
+                        else
+                            LOGGER.log(CustomLevel.TRACE, v + " <= " + b[i]);
+                    }
                 }
             }
         }
         else {
-            IcyLogger.error(CanonicalSimplexProgram.class, "Solve simplex failed");
+            if (LOGGER.isLoggable(Level.SEVERE))
+                LOGGER.log(Level.SEVERE, "Solve simplex failed");
         }
     }
 }

@@ -18,8 +18,10 @@
 
 package plugins.nchenouard.linearprogrammingfullsimplex;
 
-import fr.icy.system.logging.IcyLogger;
+import fr.icy.shared.logging.CustomLevel;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.logging.Logger;
 
 /**
  * Tableau used for Gauss-Jordan elimination.
@@ -31,6 +33,8 @@ import org.jetbrains.annotations.NotNull;
  * @author Nicolas Chenouard (nicolas.chenouard.dev@gmail.com)
  */
 public class TableauWithSlackVariables {
+    private static final Logger LOGGER = Logger.getLogger(TableauWithSlackVariables.class.getName());
+
     /**
      * Set of column vectors for the tableau. The first numVariables ones are unit vectors corresponding to slack variables.
      */
@@ -177,39 +181,41 @@ public class TableauWithSlackVariables {
      * Print the tableau
      */
     public void printTableau() {
-        IcyLogger.trace(this.getClass(), "Column vectors");
+        if (!LOGGER.isLoggable(CustomLevel.TRACE))
+            return;
+        LOGGER.log(CustomLevel.TRACE, "Column vectors");
         for (int i = 0; i < columnVectors.length; i++) {
             final double[] vector = columnVectors[i];
-            IcyLogger.trace(this.getClass(), "a" + i + " = [");
+            LOGGER.log(CustomLevel.TRACE, "a" + i + " = [");
             for (final double v : vector)
-                IcyLogger.trace(this.getClass(), v + ", ");
-            IcyLogger.trace(this.getClass(), "]'");
+                LOGGER.log(CustomLevel.TRACE, v + ", ");
+            LOGGER.log(CustomLevel.TRACE, "]'");
         }
-        IcyLogger.trace(this.getClass(), "Basis vectors");
+        LOGGER.log(CustomLevel.TRACE, "Basis vectors");
         for (int i = 0; i < leftVectorsIdx.length; i++) {
             final double[] vector = columnVectors[leftVectorsIdx[i]];
-            IcyLogger.trace(this.getClass(), "v" + i + " = [");
+            LOGGER.log(CustomLevel.TRACE, "v" + i + " = [");
             for (final double v : vector)
-                IcyLogger.trace(this.getClass(), v + ", ");
-            IcyLogger.trace(this.getClass(), "]'");
+                LOGGER.log(CustomLevel.TRACE, v + ", ");
+            LOGGER.log(CustomLevel.TRACE, "]'");
         }
-        IcyLogger.trace(this.getClass(), "Tableau");
+        LOGGER.log(CustomLevel.TRACE, "Tableau");
         for (final double[] doubles : tableau) {
             for (final double aDouble : doubles)
-                IcyLogger.trace(this.getClass(), aDouble + " ");
+                LOGGER.log(CustomLevel.TRACE, aDouble + " ");
         }
 
-        IcyLogger.trace(this.getClass(), "x = [");
+        LOGGER.log(CustomLevel.TRACE, "x = [");
         for (final double v : xCol)
-            IcyLogger.trace(this.getClass(), v + ", ");
-        IcyLogger.trace(this.getClass(), "]'");
+            LOGGER.log(CustomLevel.TRACE, v + ", ");
+        LOGGER.log(CustomLevel.TRACE, "]'");
 
-        IcyLogger.trace(this.getClass(), "score row = [");
+        LOGGER.log(CustomLevel.TRACE, "score row = [");
         for (final double v : scoreRow)
-            IcyLogger.trace(this.getClass(), v + ", ");
-        IcyLogger.trace(this.getClass(), "]'");
+            LOGGER.log(CustomLevel.TRACE, v + ", ");
+        LOGGER.log(CustomLevel.TRACE, "]'");
 
-        IcyLogger.trace(this.getClass(), "Score = " + scoreValue);
+        LOGGER.log(CustomLevel.TRACE, "Score = " + scoreValue);
     }
 
     /**

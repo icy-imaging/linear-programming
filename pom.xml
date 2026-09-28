@@ -7,24 +7,16 @@
     <parent>
         <groupId>fr.icy</groupId>
         <artifactId>pom-icy</artifactId>
-        <version>3.0.0-a.7</version>
+        <version>3.0.0-a.8-SNAPSHOT</version>
     </parent>
 
-    <groupId>fr.icy.extensions</groupId>
+    <groupId>fr.icy.extension</groupId>
     <artifactId>linear-programming</artifactId>
-    <version>2.0.0-a.7</version>
+    <version>2.0.0-a.8-SNAPSHOT</version>
 
     <name>Linear Programming</name>
-    <description>
-        A open-source utility library for linear programming in Java with the simplex algorithm.
-        Problems are of the type: min/max c*x st. Ax &#10094;= b x >= 0 The primal problem is solved using Gauss-Jordan elimination and the lexicographic rule for pivoting is used.
-
-        Handles:
-        — maximization and minimization problems
-        – equality and inequality constraints
-        — negative and positive constraint values.
-    </description>
-    <url>https://icy.bioimageanalysis.org/</url>
+    <description>A open-source utility library for linear programming in Java with the simplex algorithm</description>
+    <url>http://icy.fr/</url>
     <inceptionYear>2014</inceptionYear>
 
     <scm>
@@ -67,12 +59,13 @@
     <contributors>
         <contributor>
             <name>Nicolas Chenouard</name>
-            <roles>
-                <role>founder</role>
-            </roles>
         </contributor>
         <contributor>
             <name>Stéphane Dallongeville</name>
+        </contributor>
+        <contributor>
+            <name>Thomas Musset</name>
+            <properties><id>Azargas</id></properties>
         </contributor>
     </contributors>
 
